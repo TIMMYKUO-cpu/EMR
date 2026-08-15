@@ -4,7 +4,139 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>隨身電子病歷 | Portable Medical Record</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+* { box-sizing: border-box; }
+
+:root {
+  --blue-900: #123b72;
+  --blue-700: #1f67b1;
+  --blue-500: #4c9de8;
+  --blue-100: #eaf5ff;
+  --blue-50: #f5faff;
+  --text: #17324d;
+  --muted: #6d8195;
+  --border: #dceaf5;
+  --white: #ffffff;
+  --shadow: 0 14px 40px rgba(29, 91, 145, .10);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+  color: var(--text);
+  background: linear-gradient(145deg, #eef8ff 0%, #f8fcff 45%, #e8f4ff 100%);
+}
+
+.app-shell { max-width: 1080px; margin: auto; padding: 28px 22px 40px; }
+
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 22px;
+}
+
+.brand { display: flex; align-items: center; gap: 13px; }
+.brand-icon {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 15px; color: white; font-size: 27px;
+  background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+  box-shadow: 0 8px 20px rgba(47, 126, 203, .25);
+}
+.brand h1 { margin: 0; font-size: 22px; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; letter-spacing: .8px; }
+
+.language-box {
+  display: flex; align-items: center; gap: 8px;
+  background: white; border: 1px solid var(--border);
+  border-radius: 13px; padding: 9px 12px;
+  box-shadow: var(--shadow);
+}
+.language-box select { border: 0; outline: 0; background: transparent; color: var(--text); font-weight: 600; }
+
+.hero {
+  position: relative; overflow: hidden; display: flex; justify-content: space-between;
+  align-items: center; min-height: 210px; padding: 38px 44px;
+  border-radius: 28px; color: white;
+  background: linear-gradient(120deg, #14518f, #2d85d2 60%, #77c4f4);
+  box-shadow: 0 18px 50px rgba(26, 102, 166, .20);
+}
+.hero:after {
+  content: ""; position: absolute; width: 330px; height: 330px; border-radius: 50%;
+  right: -110px; top: -120px; background: rgba(255,255,255,.10);
+}
+.badge {
+  display: inline-block; padding: 5px 10px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px;
+  background: rgba(255,255,255,.18);
+}
+.hero h2 { margin: 14px 0 8px; font-size: clamp(28px, 4vw, 40px); }
+.hero p { max-width: 650px; line-height: 1.8; margin: 0; color: #eaf6ff; }
+.hero-cross { position: relative; z-index: 1; font-size: 100px; opacity: .18; }
+
+.notice {
+  display: flex; gap: 13px; margin: 18px 0;
+  padding: 15px 18px; border: 1px solid #cfe7fa; border-radius: 16px;
+  background: rgba(255,255,255,.8);
+}
+.notice > span { font-size: 22px; }
+.notice strong { font-size: 14px; }
+.notice p { margin: 3px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+.card {
+  margin: 16px 0; padding: 25px;
+  background: rgba(255,255,255,.94); border: 1px solid var(--border);
+  border-radius: 20px; box-shadow: var(--shadow);
+}
+.section-heading { display: flex; gap: 14px; align-items: center; margin-bottom: 19px; }
+.section-number {
+  width: 42px; height: 42px; display: grid; place-items: center;
+  border-radius: 13px; background: var(--blue-100); color: var(--blue-700);
+  font-size: 12px; font-weight: 900;
+}
+.section-heading h3 { margin: 0; font-size: 18px; }
+.section-heading p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
+.grid.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; font-weight: 700; }
+input, select, textarea {
+  width: 100%; border: 1px solid #d8e6f1; border-radius: 11px;
+  padding: 12px 13px; outline: none; color: var(--text);
+  background: #fbfdff; font: inherit; transition: .2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(76,157,232,.12);
+}
+textarea { min-height: 115px; resize: vertical; line-height: 1.7; }
+
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin: 22px 0; }
+button {
+  border: 0; border-radius: 12px; padding: 12px 22px; cursor: pointer;
+  font: inherit; font-weight: 800;
+}
+.primary { color: white; background: linear-gradient(135deg, var(--blue-700), var(--blue-500)); box-shadow: 0 8px 20px rgba(42, 121, 194, .22); }
+.secondary { color: var(--blue-700); background: white; border: 1px solid var(--border); }
+
+.saved { border-color: #bfe8d1; background: #f6fff9; }
+.saved-header { display: flex; justify-content: space-between; align-items: center; }
+.saved h3 { margin: 8px 0 0; }
+.saved .badge { background: #dcf7e7; color: #21784a; }
+.check { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: #d9f5e5; color: #25804e; font-weight: 900; }
+.saved p { color: #5e7868; font-size: 13px; }
+
+footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 28px; color: #8195a7; font-size: 11px; }
+
+@media (max-width: 700px) {
+  .app-shell { padding: 18px 13px 30px; }
+  .topbar, footer { align-items: flex-start; flex-direction: column; }
+  .hero { padding: 30px 25px; }
+  .hero-cross { display: none; }
+  .grid.two { grid-template-columns: 1fr; }
+  .card { padding: 20px; }
+  .actions { justify-content: stretch; }
+  button { flex: 1; }
+}
+
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -132,6 +264,138 @@
       <span data-i18n="footerText">僅供個人資料整理示範，不取代專業醫療建議。</span>
     </footer>
   </div>
-  <script src="script.js"></script>
+  <script>
+const translations = {
+  zh: {
+    appTitle:"隨身電子病歷", appSubtitle:"Portable Medical Record", privateBadge:"PERSONAL HEALTH",
+    heroTitle:"你的健康資料，一頁掌握", heroText:"整理個人史、疾病史、家族史、手術史與用藥史，方便在需要時快速查看。",
+    privacyTitle:"隱私提醒", privacyText:"這是一個瀏覽器端示範網站。資料只保存在目前瀏覽器的本機儲存空間，不會自動上傳到伺服器。",
+    personalTitle:"個人資料", personalHint:"基本資訊", name:"姓名", birth:"出生日期", blood:"血型", phone:"聯絡電話", select:"請選擇",
+    diseaseTitle:"疾病史", diseaseHint:"目前或過去的重要疾病", diseasePlaceholder:"例如：氣喘、糖尿病、心臟疾病……",
+    familyTitle:"家族史", familyHint:"家族中曾出現的重要疾病", familyPlaceholder:"例如：父母、兄弟姊妹或祖父母的相關病史……",
+    surgeryTitle:"手術史", surgeryHint:"曾接受過的手術或住院紀錄", surgeryPlaceholder:"請輸入手術名稱、日期及相關備註……",
+    medicineTitle:"用藥史", medicineHint:"目前或曾經使用的藥物", medicinePlaceholder:"請輸入藥物名稱、劑量、使用原因……",
+    extraTitle:"其他重要資訊", extraHint:"過敏、特殊注意事項等", extraPlaceholder:"例如：藥物過敏、食物過敏、其他注意事項……",
+    namePlaceholder:"請輸入姓名", phonePlaceholder:"請輸入電話", clear:"清除資料", save:"儲存病歷",
+    savedBadge:"SAVED", savedTitle:"資料已儲存", savedText:"資料已保存於此瀏覽器的本機儲存空間。",
+    footerText:"僅供個人資料整理示範，不取代專業醫療建議。"
+  },
+  en: {
+    appTitle:"Portable Medical Record", appSubtitle:"Personal Health Information", privateBadge:"PERSONAL HEALTH",
+    heroTitle:"Your health information, all in one place", heroText:"Organize your personal, disease, family, surgery, and medication history for quick access when needed.",
+    privacyTitle:"Privacy Notice", privacyText:"This is a browser-based demo. Information is stored locally in this browser and is not automatically uploaded to a server.",
+    personalTitle:"Personal Information", personalHint:"Basic information", name:"Name", birth:"Date of Birth", blood:"Blood Type", phone:"Phone", select:"Select",
+    diseaseTitle:"Medical History", diseaseHint:"Important current or past conditions", diseasePlaceholder:"Example: asthma, diabetes, heart disease…",
+    familyTitle:"Family History", familyHint:"Important conditions in your family", familyPlaceholder:"Example: medical history of parents, siblings, or grandparents…",
+    surgeryTitle:"Surgical History", surgeryHint:"Previous surgeries or hospitalizations", surgeryPlaceholder:"Enter surgery name, date, and notes…",
+    medicineTitle:"Medication History", medicineHint:"Current or previous medications", medicinePlaceholder:"Enter medication, dosage, and reason for use…",
+    extraTitle:"Other Important Information", extraHint:"Allergies and special notes", extraPlaceholder:"Example: drug allergies, food allergies, other precautions…",
+    namePlaceholder:"Enter your name", phonePlaceholder:"Enter your phone number", clear:"Clear", save:"Save Record",
+    savedBadge:"SAVED", savedTitle:"Record Saved", savedText:"Your information has been saved in this browser's local storage.",
+    footerText:"For personal information organization only; not a substitute for professional medical advice."
+  },
+  ko: {
+    appTitle:"휴대용 전자 의료기록", appSubtitle:"Personal Health Information", privateBadge:"PERSONAL HEALTH",
+    heroTitle:"건강 정보를 한곳에서 확인하세요", heroText:"개인 정보, 질병력, 가족력, 수술력, 복약 정보를 정리하여 필요할 때 빠르게 확인할 수 있습니다.",
+    privacyTitle:"개인정보 안내", privacyText:"브라우저 기반 데모입니다. 정보는 현재 브라우저에만 저장되며 서버로 자동 전송되지 않습니다.",
+    personalTitle:"개인 정보", personalHint:"기본 정보", name:"이름", birth:"생년월일", blood:"혈액형", phone:"연락처", select:"선택",
+    diseaseTitle:"질병력", diseaseHint:"현재 또는 과거의 주요 질환", diseasePlaceholder:"예: 천식, 당뇨병, 심장질환…",
+    familyTitle:"가족력", familyHint:"가족의 주요 질환", familyPlaceholder:"예: 부모, 형제자매, 조부모의 병력…",
+    surgeryTitle:"수술력", surgeryHint:"수술 또는 입원 기록", surgeryPlaceholder:"수술명, 날짜 및 메모를 입력하세요…",
+    medicineTitle:"복약력", medicineHint:"현재 또는 과거 복용 약물", medicinePlaceholder:"약 이름, 용량, 복용 이유를 입력하세요…",
+    extraTitle:"기타 중요 정보", extraHint:"알레르기 및 주의사항", extraPlaceholder:"예: 약물 알레르기, 음식 알레르기…",
+    namePlaceholder:"이름을 입력하세요", phonePlaceholder:"전화번호를 입력하세요", clear:"삭제", save:"저장",
+    savedBadge:"SAVED", savedTitle:"저장되었습니다", savedText:"정보가 이 브라우저의 로컬 저장소에 저장되었습니다.",
+    footerText:"개인 정보 정리용 데모이며 전문적인 의료 조언을 대신하지 않습니다."
+  },
+  ja: {
+    appTitle:"携帯電子カルテ", appSubtitle:"Personal Health Information", privateBadge:"PERSONAL HEALTH",
+    heroTitle:"健康情報を一つの画面で管理", heroText:"個人情報、病歴、家族歴、手術歴、服薬歴を整理し、必要なときにすぐ確認できます。",
+    privacyTitle:"プライバシーについて", privacyText:"ブラウザ上のデモです。情報はこのブラウザ内にのみ保存され、サーバーへ自動送信されません。",
+    personalTitle:"個人情報", personalHint:"基本情報", name:"氏名", birth:"生年月日", blood:"血液型", phone:"電話番号", select:"選択",
+    diseaseTitle:"病歴", diseaseHint:"現在または過去の主な病気", diseasePlaceholder:"例：喘息、糖尿病、心臓病…",
+    familyTitle:"家族歴", familyHint:"家族に見られる主な病気", familyPlaceholder:"例：両親、兄弟姉妹、祖父母の病歴…",
+    surgeryTitle:"手術歴", surgeryHint:"手術・入院の記録", surgeryPlaceholder:"手術名、日付、メモを入力してください…",
+    medicineTitle:"服薬歴", medicineHint:"現在または過去に使用した薬", medicinePlaceholder:"薬名、用量、使用理由を入力してください…",
+    extraTitle:"その他の重要情報", extraHint:"アレルギー・注意事項", extraPlaceholder:"例：薬物アレルギー、食物アレルギー…",
+    namePlaceholder:"氏名を入力", phonePlaceholder:"電話番号を入力", clear:"クリア", save:"保存",
+    savedBadge:"SAVED", savedTitle:"保存しました", savedText:"情報はこのブラウザのローカルストレージに保存されました。",
+    footerText:"個人情報整理用のデモです。専門的な医療アドバイスの代替ではありません。"
+  },
+  vi: {
+    appTitle:"Hồ sơ bệnh án điện tử", appSubtitle:"Personal Health Information", privateBadge:"PERSONAL HEALTH",
+    heroTitle:"Quản lý thông tin sức khỏe trong một nơi", heroText:"Sắp xếp thông tin cá nhân, bệnh sử, tiền sử gia đình, phẫu thuật và thuốc để dễ xem khi cần.",
+    privacyTitle:"Lưu ý về quyền riêng tư", privacyText:"Đây là bản demo chạy trên trình duyệt. Dữ liệu chỉ được lưu trên trình duyệt hiện tại và không tự động tải lên máy chủ.",
+    personalTitle:"Thông tin cá nhân", personalHint:"Thông tin cơ bản", name:"Họ tên", birth:"Ngày sinh", blood:"Nhóm máu", phone:"Điện thoại", select:"Chọn",
+    diseaseTitle:"Tiền sử bệnh", diseaseHint:"Các bệnh quan trọng hiện tại hoặc trước đây", diseasePlaceholder:"Ví dụ: hen suyễn, tiểu đường, bệnh tim…",
+    familyTitle:"Tiền sử gia đình", familyHint:"Các bệnh quan trọng trong gia đình", familyPlaceholder:"Ví dụ: tiền sử bệnh của cha mẹ, anh chị em, ông bà…",
+    surgeryTitle:"Tiền sử phẫu thuật", surgeryHint:"Các ca phẫu thuật hoặc nhập viện", surgeryPlaceholder:"Nhập tên phẫu thuật, ngày và ghi chú…",
+    medicineTitle:"Tiền sử dùng thuốc", medicineHint:"Thuốc đang hoặc đã sử dụng", medicinePlaceholder:"Nhập tên thuốc, liều lượng và lý do sử dụng…",
+    extraTitle:"Thông tin quan trọng khác", extraHint:"Dị ứng và lưu ý đặc biệt", extraPlaceholder:"Ví dụ: dị ứng thuốc, dị ứng thực phẩm…",
+    namePlaceholder:"Nhập họ tên", phonePlaceholder:"Nhập số điện thoại", clear:"Xóa", save:"Lưu hồ sơ",
+    savedBadge:"SAVED", savedTitle:"Đã lưu hồ sơ", savedText:"Thông tin đã được lưu trong bộ nhớ cục bộ của trình duyệt này.",
+    footerText:"Chỉ dùng để sắp xếp thông tin cá nhân; không thay thế tư vấn y tế chuyên nghiệp."
+  }
+};
+
+const fields = ["name","birth","blood","phone","disease","family","surgery","medicine","extra"];
+const form = document.getElementById("medicalForm");
+const savedCard = document.getElementById("savedCard");
+
+function applyLanguage(lang) {
+  const t = translations[lang] || translations.zh;
+  document.documentElement.lang = lang === "zh" ? "zh-Hant" : lang;
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) el.textContent = t[key];
+  });
+
+  document.querySelectorAll("[data-placeholder]").forEach(el => {
+    const key = el.dataset.placeholder;
+    if (t[key]) el.placeholder = t[key];
+  });
+}
+
+function saveData() {
+  const data = {};
+  fields.forEach(id => data[id] = document.getElementById(id).value);
+  localStorage.setItem("portableMedicalRecord", JSON.stringify(data));
+}
+
+function loadData() {
+  try {
+    const data = JSON.parse(localStorage.getItem("portableMedicalRecord") || "null");
+    if (!data) return;
+    fields.forEach(id => {
+      if (data[id] !== undefined) document.getElementById(id).value = data[id];
+    });
+  } catch {}
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  saveData();
+  savedCard.hidden = false;
+  savedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  form.reset();
+  localStorage.removeItem("portableMedicalRecord");
+  savedCard.hidden = true;
+});
+
+document.getElementById("languageSelect").addEventListener("change", (e) => {
+  localStorage.setItem("medicalLanguage", e.target.value);
+  applyLanguage(e.target.value);
+});
+
+const initialLanguage = localStorage.getItem("medicalLanguage") || "zh";
+document.getElementById("languageSelect").value = initialLanguage;
+applyLanguage(initialLanguage);
+loadData();
+
+</script>
 </body>
 </html>
